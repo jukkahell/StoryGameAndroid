@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "316281430148",
+    "firebase_url": "https://story-game-60b91.firebaseio.com",
+    "project_id": "story-game-60b91",
+    "storage_bucket": "story-game-60b91.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316281430148:android:ba7f6104b0a74679",
+        "android_client_info": {
+          "package_name": "fi.hell.storygame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316281430148-r3qbs312e22bg0dkmfkhmh9d8cu76gom.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaOKXr8z9GGNgwpXiFq4uiiGsxJbbAero"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316281430148-r3qbs312e22bg0dkmfkhmh9d8cu76gom.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
