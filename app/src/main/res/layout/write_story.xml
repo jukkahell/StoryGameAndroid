@@ -8,34 +8,23 @@
     tools:context=".GameActivity">
 
     <TextView
-        android:id="@+id/writeStory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/write_story"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/previousText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5sp"
+        android:layout_marginStart="13dp"
         android:layout_marginTop="5sp"
-        android:layout_marginEnd="5sp"
+        android:layout_marginEnd="13dp"
+        android:fadeScrollbars="false"
         android:maxLines="10"
         android:scrollbarAlwaysDrawHorizontalTrack="false"
         android:scrollbarAlwaysDrawVerticalTrack="false"
         android:scrollbars="vertical"
         android:singleLine="false"
         android:textSize="16sp"
-        android:fadeScrollbars="false"
         app:layout_constraintBottom_toTopOf="@+id/story"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/writeStory"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Once upon a time there was a coder..." />
 
     <ProgressBar
@@ -43,22 +32,49 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/previousText"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/previousText" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/highlighted_story"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:background="@android:color/transparent"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="@string/write_story"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:paddingTop="0sp"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toTopOf="@+id/words_left"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/previousText"
+        tools:text="who was really good at what he was doing." />
 
     <EditText
         android:id="@+id/story"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:labelFor="@+id/story"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:gravity="start|top"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
         android:paddingTop="0sp"
-        android:hint="@string/write_story"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        android:textAlignment="viewStart"
+        android:textColor="#00FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/words_left"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/previousText"
@@ -69,17 +85,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/submit_story"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/story"
         tools:text="9/20" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/submit_story"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/submit"
         android:onClick="submitText"
+        app:layout_constraintTop_toBottomOf="@+id/words_left"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

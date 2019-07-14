@@ -81,6 +81,9 @@ class NotificationService: FirebaseMessagingService() {
                 val nextWriter = Gson().fromJson(remoteMessage.data["nextWriter"], User::class.java)
                 intent.putExtra("nextWriter", nextWriter)
             }
+            if (type == "USER_JOINED") {
+                intent.putExtra("participants", remoteMessage.data["participants"]!!.toInt())
+            }
             broadcaster!!.sendBroadcast(intent)
         }
 

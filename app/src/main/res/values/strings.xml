@@ -63,4 +63,24 @@
     <string name="error_USERNAME_EXISTS">Username is already taken</string>
     <string name="error_INVALID_PASSWORD">Password must be at least 8 characters</string>
     <string name="msg_token_fmt">Message token %1$s</string>
+    <string name="finalize_story">Finalize story</string>
+    <string name="games_tab_1">Ongoing</string>
+    <string name="games_tab_2">Finished</string>
+    <string name="games_tab_3">Popular</string>
+    <string name="max_words_smaller_than_min_words">Max words can\'t be smaller than min words</string>
+    <string-array name="privacy_selections">
+        <item>Private</item>
+        <item>Public to read</item>
+        <item>Public to read and write</item>
+    </string-array>
+    <string name="error_MAX_WORDS_INVALID">Max words value must be at least 1</string>
+    <string name="error_ROUNDS_PER_USER_INVALID">Rounds per user must be at least 1</string>
+    <string name="max_participants">Max participants</string>
+    <string name="max_participants_invalid">Max participants must be at least 2. Leave blank to allow all.</string>
+    <string name="error_GAME_IS_FULL">Game already has maximum amount of participants</string>
+    <string name="action_delete">Delete</string>
+    <string name="story_deleted">Story deleted</string>
+    <string name="unable_to_connect_backend">Unable to connect to the server</string>
+    <string name="error">Error</string>
+    <string name="no_internet">Unable to connect to servers. Please check your internet connection.</string>
 </resources>

@@ -64,4 +64,24 @@
     <string name="error_USERNAME_EXISTS">Käyttäjänimi on varattu</string>
     <string name="error_INVALID_PASSWORD">Salasanan on oltava vähintään 8 merkkiä</string>
     <string name="msg_token_fmt">Message token %1$s</string>
+    <string name="finalize_story">Viimeistele tarina</string>
+    <string name="games_tab_1">Meneillään</string>
+    <string name="games_tab_3">Suositut</string>
+    <string name="games_tab_2">Valmiit</string>
+    <string name="max_words_smaller_than_min_words">Sanoja enintään ei voi olla pienempi kuin sanoja vähintään</string>
+    <string-array name="privacy_selections">
+        <item>Yksityinen</item>
+        <item>Julkinen lukea</item>
+        <item>Julkinen kirjoittaa ja lukea</item>
+    </string-array>
+    <string name="error_MAX_WORDS_INVALID">Sanoja enintään arvon on oltava vähintään 1</string>
+    <string name="error_ROUNDS_PER_USER_INVALID">Kierroksia per käyttäjä arvo on oltava vähintään 1</string>
+    <string name="max_participants">Osallistujia enintään</string>
+    <string name="max_participants_invalid">Osallistujia enintään arvo pitää olla ainakin 2. Jätä tyhjäksi salliaksesi kaikki.</string>
+    <string name="error_GAME_IS_FULL">Osallistujamäärä on jo täynnä</string>
+    <string name="action_delete">Poista</string>
+    <string name="story_deleted">Tarina poistettu</string>
+    <string name="unable_to_connect_backend">Unable to connect to the server</string>
+    <string name="error">Virhe</string>
+    <string name="no_internet">Ei saatu yhteyttä palvelimeen. Ole hyvä ja tarkista internet-yhteytesi.</string>
 </resources>

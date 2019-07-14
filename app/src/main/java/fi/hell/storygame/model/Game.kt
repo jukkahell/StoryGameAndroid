@@ -15,6 +15,15 @@ enum class GameStatus(val pos: Int) {
     FINISHED(2)
 }
 
+enum class PrivacyMode(val pos: Int) {
+    @SerializedName("private")
+    PRIVATE(0),
+    @SerializedName("public_read")
+    PUBLIC_READ(1),
+    @SerializedName("public_read_write")
+    PUBLIC_READ_WRITE(2)
+}
+
 @Parcelize
 data class Game(
     val id: String,
@@ -24,7 +33,8 @@ data class Game(
     val owner: String,
     val created: Date,
     var nextWriter: User,
-    val users: List<User>
+    val users: List<User>,
+    val stories: List<Story>
 ): Parcelable
 
 data class CreateGame(
@@ -35,11 +45,12 @@ data class CreateGame(
 @Parcelize
 data class Settings(
     val locale: String,
-    val public: Boolean,
+    val privacy: PrivacyMode,
     val minWords: Int,
     val maxWords: Int,
     val roundsPerUser: Int,
-    val wordsVisible: Int
+    val wordsVisible: Int,
+    val maxParticipants: Int
     ): Parcelable
 
 data class HttpError(
@@ -48,7 +59,8 @@ data class HttpError(
     val message: String
 )
 
+@Parcelize
 data class Story(
     val text: String,
     val author: String?
-)
+): Parcelable

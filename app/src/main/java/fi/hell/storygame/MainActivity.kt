@@ -1,50 +1,37 @@
 package fi.hell.storygame
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.*
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-
-import kotlinx.android.synthetic.main.activity_main.*
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import fi.hell.storygame.model.*
-import fi.hell.storygame.service.NotificationService.Companion.NOTIFICATION_ACTION
+import fi.hell.storygame.model.AuthData
+import fi.hell.storygame.model.FCMToken
+import fi.hell.storygame.model.HttpError
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
 
-        fab.setOnClickListener {
-            val intent = Intent(this, CreateGameActivity::class.java)
-            startActivity(intent)
-        }
-
-        LocalBroadcastManager.getInstance(this).registerReceiver((broadcastReceiver),
-            IntentFilter(NOTIFICATION_ACTION)
-        )
+        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
+        val viewPager: ViewPager = findViewById(R.id.view_pager)
+        viewPager.adapter = sectionsPagerAdapter
+        val tabs: TabLayout = findViewById(R.id.tabs)
+        tabs.setupWithViewPager(viewPager)
     }
 
     override fun onResume() {
@@ -57,49 +44,58 @@ class MainActivity : AppCompatActivity() {
         if (joinPath != null) {
             val gameId = joinPath.replace("/", "")
             Thread {
-                URL(BuildConfig.BACKEND_URL +"/game/$gameId/join").openConnection()
-                    .let {
-                        it as HttpURLConnection
-                    }
-                    .apply {
-                        addRequestProperty(
-                            "Authorization", "Bearer ${authData.accessToken}"
-                        )
-                        requestMethod = "PUT"
-                        doOutput = false
-                    }.let {
-                        if (it.responseCode == 202) {
-                            runOnUiThread {
-                                Toast.makeText(this, getString(R.string.joined), Toast.LENGTH_LONG).show()
-                            }
-                            finish()
-                            overridePendingTransition(0, 0)
-                            intent.data = null
-                            intent.removeExtra("joinPath")
-                            startActivity(intent)
-                            overridePendingTransition(0, 0)
-                        } else {
-                            BufferedReader(InputStreamReader(it.errorStream)).use { buf ->
-                                val response = StringBuffer()
-                                var inputLine = buf.readLine()
-                                while (inputLine != null) {
-                                    response.append(inputLine)
-                                    inputLine = buf.readLine()
-                                }
-                                buf.close()
-                                val errorResponse = Gson().fromJson(response.toString(), HttpError::class.java)
-                                val name = "error_${errorResponse.error}"
-                                val id = resources.getIdentifier(name, "string", "fi.hell.storygame")
+                try {
+                    URL(BuildConfig.BACKEND_URL +"/game/$gameId/join").openConnection()
+                        .let {
+                            it as HttpURLConnection
+                        }
+                        .apply {
+                            addRequestProperty(
+                                "Authorization", "Bearer ${authData.accessToken}"
+                            )
+                            connectTimeout = 10000
+                            requestMethod = "PUT"
+                            doOutput = false
+                        }.let {
+                            if (it.responseCode == 202) {
                                 runOnUiThread {
-                                    Toast.makeText(this, resources.getString(id), Toast.LENGTH_LONG).show()
+                                    Toast.makeText(this, getString(R.string.joined), Toast.LENGTH_LONG).show()
+                                }
+                                finish()
+                                overridePendingTransition(0, 0)
+                                intent.data = null
+                                intent.removeExtra("joinPath")
+                                startActivity(intent)
+                                overridePendingTransition(0, 0)
+                            } else {
+                                BufferedReader(InputStreamReader(it.errorStream)).use { buf ->
+                                    val response = StringBuffer()
+                                    var inputLine = buf.readLine()
+                                    while (inputLine != null) {
+                                        response.append(inputLine)
+                                        inputLine = buf.readLine()
+                                    }
+                                    buf.close()
+                                    val errorResponse = Gson().fromJson(response.toString(), HttpError::class.java)
+                                    val name = "error_${errorResponse.error}"
+                                    val id = resources.getIdentifier(name, "string", "fi.hell.storygame")
+                                    runOnUiThread {
+                                        Toast.makeText(this, resources.getString(id), Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
                         }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this,
+                            resources.getString(R.string.unable_to_connect_backend),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
+                }
             }.start()
         }
-
-        getGames(authData)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -136,71 +132,49 @@ class MainActivity : AppCompatActivity() {
                 AuthService.updateFCMToken(this, token)
 
                 Thread {
-                    URL(BuildConfig.BACKEND_URL +"/user/fcmToken").openConnection()
-                        .let {
-                            it as HttpURLConnection
-                        }
-                        .apply {
-                            addRequestProperty(
-                                "Authorization", "Bearer ${authData.accessToken}"
-                            )
-                            addRequestProperty(
-                                "content-type", "application/json"
-                            )
-                            requestMethod = "PUT"
-                            doOutput = true
-                            val outputWriter = OutputStreamWriter(outputStream)
-                            val fcmTokenJson = Gson().toJson(FCMToken(token = token))
-                            outputWriter.write(fcmTokenJson.toString())
-                            outputWriter.flush()
-                        }.let {
-                            if (it.responseCode != 200) {
-                                BufferedReader(InputStreamReader(it.errorStream)).use { buf ->
-                                    val response = StringBuffer()
-                                    var inputLine = buf.readLine()
-                                    while (inputLine != null) {
-                                        response.append(inputLine)
-                                        inputLine = buf.readLine()
+                    try {
+                        URL(BuildConfig.BACKEND_URL +"/user/fcmToken").openConnection()
+                            .let {
+                                it as HttpURLConnection
+                            }
+                            .apply {
+                                addRequestProperty(
+                                    "Authorization", "Bearer ${authData.accessToken}"
+                                )
+                                addRequestProperty(
+                                    "content-type", "application/json"
+                                )
+                                connectTimeout = 10000
+                                requestMethod = "PUT"
+                                doOutput = true
+                                val outputWriter = OutputStreamWriter(outputStream)
+                                val fcmTokenJson = Gson().toJson(FCMToken(token = token))
+                                outputWriter.write(fcmTokenJson.toString())
+                                outputWriter.flush()
+                            }.let {
+                                if (it.responseCode != 200) {
+                                    BufferedReader(InputStreamReader(it.errorStream)).use { buf ->
+                                        val response = StringBuffer()
+                                        var inputLine = buf.readLine()
+                                        while (inputLine != null) {
+                                            response.append(inputLine)
+                                            inputLine = buf.readLine()
+                                        }
+                                        buf.close()
+                                        println(response.toString())
                                     }
-                                    buf.close()
-                                    println(response.toString())
                                 }
                             }
+                    } catch (e: Exception) {
+                        runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                resources.getString(R.string.unable_to_connect_backend),
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
+                    }
                 }.start()
             })
-    }
-
-    private fun getGames(authData: AuthData) {
-        val gameList = findViewById<RecyclerView>(R.id.gameList)
-        Thread {
-            val gamesJson = URL(BuildConfig.BACKEND_URL +"/games").openConnection().apply {
-                setRequestProperty(
-                    "Authorization", "Bearer ${authData.accessToken}"
-                )
-            }.getInputStream().use {
-                it.bufferedReader().use(BufferedReader::readText)
-            }
-
-            val games = Gson().fromJson<List<Game>>(gamesJson, object : TypeToken<List<Game>>() {}.type)
-            val sortedGames = games
-                .sortedByDescending { it.nextWriter.id == authData.userId }
-                .sortedWith(compareBy { it.status.pos })
-            runOnUiThread {
-                gameList.layoutManager = LinearLayoutManager(this)
-                gameList.adapter = GameListAdapter(sortedGames, this, authData.userId)
-            }
-        }.start()
-    }
-
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (context == null) return
-            val authData = AuthService.getAuthData(context) ?: return
-            when (intent?.getStringExtra("type")) {
-                "NEXT_WRITER" -> getGames(authData)
-                "STORY_STARTED" -> getGames(authData)
-            }
-        }
     }
 }
